@@ -12,7 +12,7 @@ unsigned char OW_read_bit (void);
 int OW_reset_pulse(void);
 void OW_write_byte (unsigned char write_data);
 unsigned char OW_read_byte (void);
-int getTemp(void);
+int getTemperature(void);
 void configurePrecision(unsigned char precision);
 
 #endif
