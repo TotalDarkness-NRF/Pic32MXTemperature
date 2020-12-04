@@ -3,21 +3,22 @@
 #include "TemperatureSensor.h"
 
 int getTemperature(void) { // TODO make this work
-    int temperature = 0;
+    int finalTemperature = 0;
     if (!OW_reset_pulse()) {
         OW_write_byte(0xCC); // Skip ROM
         OW_write_byte(0x44); // Convert temperature in degrees
-        Delay(800);
+        Delay(100); // TODO what delay?
         OW_reset_pulse();
         OW_write_byte(0xCC); // Skip ROM
         OW_write_byte(0xBE); // Get all the memory
-        temperature = OW_read_byte(); // gets byte from sensor
-        temperature = temperature | (int)(OW_read_byte() << 8);
-        //TODO we might be overestimating temp
-        //TODO temp is not formatted correctly
+       
+        finalTemperature = OW_read_byte() | (int)(OW_read_byte() << 8);
+        
+        //TEMPERATURE = TEMP_READ - 0.25 + (COUNT_PER_C - COUNT_REMAIN/COUNT_PER_C)
+        // TODO we need the above fomula to calculate temp, but how?!
         OW_reset_pulse();
     }
-    return temperature;
+    return finalTemperature;
 }
 
 void driveOW(char Bit) {
