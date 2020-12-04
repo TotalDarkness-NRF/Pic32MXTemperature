@@ -5,14 +5,14 @@
 #define WRITE_PIN  		_LATA0
 #define READ_PIN		_RA0
 
-void driveOW (char Bit);
-unsigned char read_OW (void);
-void OW_write_bit (unsigned char write_data);
-unsigned char OW_read_bit (void);
-int OW_reset_pulse(void);
-void OW_write_byte (unsigned char write_data);
-unsigned char OW_read_byte (void);
-int getTemperature(void);
+void DriveOW(unsigned char Bit);
+int ResetPulse();
+unsigned char ReadByte();
+unsigned char ReadBit();
+unsigned char ReadOW();
+void WriteByte(unsigned char write_data);
+void WriteBit(unsigned char write_data);
+int getTemperature();
 void configurePrecision(unsigned char precision);
 
 #endif
