@@ -4,35 +4,45 @@
 
 int getTemperature(void) { // TODO make this work
     int finalTemperature = 0;
-    if (!OW_reset_pulse()) {
-        OW_write_byte(0xCC); // Skip ROM
-        OW_write_byte(0x44); // Convert temperature in degrees
-        Delay(100); // TODO what delay?
-        OW_reset_pulse();
-        OW_write_byte(0xCC); // Skip ROM
-        OW_write_byte(0xBE); // Get all the memory
+    if (!ResetPulse()) {
+        WriteByte(0xCC); // Skip ROM
+        WriteByte(0x44); // Convert temperature in degrees
+        Delay(750); // TODO what delay?
+        ResetPulse();
+        WriteByte(0xCC); // Skip ROM
+        WriteByte(0xBE); // Get all the memory
        
-        finalTemperature = OW_read_byte() | (int)(OW_read_byte() << 8);
+        //finalTemperature = OW_read_byte() | (int)(OW_read_byte() << 8);
+        int data[9];
+        int i;
+        for (i = 0; i <9; i++) {
+            data[i] = ReadByte();
+        }
+        // TODO see why its always 0.0
+        int TempRead = data[0] | (int)(data[1] << 8);
+        int CountPerC = data[7];
+        int CountRemain = data[6];
+        finalTemperature = TempRead - 0.25 + ((CountPerC - CountRemain)/ CountPerC);
         
         //TEMPERATURE = TEMP_READ - 0.25 + (COUNT_PER_C - COUNT_REMAIN/COUNT_PER_C)
         // TODO we need the above fomula to calculate temp, but how?!
-        OW_reset_pulse();
+        ResetPulse();
     }
     return finalTemperature;
 }
 
-void driveOW(char Bit) {
+void driveOW(unsigned char bit) {
     PIN_DIRECTION = OUTPUT;
-    WRITE_PIN = Bit;
+    WRITE_PIN = bit ? 1 : 0;
 }
 
-int OW_reset_pulse(void) {
+int ResetPulse(void) {
     int presence_detect = 0;
     driveOW(LOW); // pulling the 1-Wire bus low
     Delayus(480); // delay to go from transmit to receive mode
     driveOW(HIGH); // pulling the 1-Wire bus high, releases
     Delayus(70); //  transmits a presence pulse by pullng the 1-Wire bus low
-    presence_detect = read_OW(); // pulled low for about 60?s to 240?s
+    presence_detect = ReadOW(); // pulled low for about 60?s to 240?s
     Delayus(410); // Complete the reset sequence recovery
     return presence_detect; // 0=presence, 1 = no part
 }
@@ -40,17 +50,16 @@ int OW_reset_pulse(void) {
 /*
  * Writing to one wire
  */
-void OW_write_byte(unsigned char data) {
-    int loop;
+void WriteByte(unsigned char data) {
+    unsigned char i;
     // Loop to write each bit in the byte, LS-bit first
-    for (loop = 0; loop < 8; loop++) {
-        //OW_write_bit((write_data >> loop) & 0x01);
-        OW_write_bit(data & 0x01); //Sending LS-bit first
+    for (i = 0; i < 8; i++) {
+        WriteBit(data & 0x01); //Sending LS-bit first
         data >>= 1; // shift the data byte for the next bit to send
     }
 }
 
-void OW_write_bit(unsigned char write_bit) {
+void WriteBit(unsigned char write_bit) {
     if (write_bit) {
         //writing a bit '1'
         driveOW(LOW); // Drive the bus low
@@ -73,36 +82,29 @@ void OW_write_bit(unsigned char write_bit) {
 /*
  * Read from one wire
  */
-unsigned char OW_read_byte(void) {
-    char loop, result = 0;
+unsigned char ReadByte() {
+    char i, result = 0;   // TODO can this be unsigned ?
 
-    for (loop = 0; loop < 8; loop++) {
+    for (i = 0; i < 8; i++) {
         result >>= 1; // shift the result to get it ready for the next bit to receive
-        if (OW_read_bit())
+        if (ReadBit())
             result |= 0x80; // if result is one, then set MS-bit
     }
     return result;
 }
 
-unsigned char OW_read_bit(void) {
-   char result;
-
+unsigned char ReadBit() {
+    unsigned char bit;
     driveOW(LOW); // Drive the bus low
-
     Delayus(6);
-    
     driveOW(HIGH); // Release the bus
-    
     Delayus(9);
-
-    result = read_OW(); //Read the status of OW_PIN
-    
+    bit = ReadOW(); //Read the status of OW_PIN
     Delayus(55); // Complete the time slot and 10us recovery
-    
-    return result;
+    return bit;
 }
 
-unsigned char read_OW(void) {
+unsigned char ReadOW() {
     PIN_DIRECTION = INPUT;
     return READ_PIN ? 1 : 0;
 }
@@ -112,7 +114,7 @@ unsigned char read_OW(void) {
  */
  
 void configurePrecision(unsigned char precision) {
-    char value;
+    unsigned char value;
     switch(precision) {
         case 9:
             value = 0;
@@ -128,10 +130,10 @@ void configurePrecision(unsigned char precision) {
             break;       
     }
     
-    OW_reset_pulse();
-    OW_write_byte(0xCC); //Skip ROM
-    OW_write_byte(0x4E); // Configure command
-    OW_write_byte(0x00); // Alarm 
-    OW_write_byte(0x00); // Alarm 
-    OW_write_byte(value); // set precision 
+    ResetPulse();
+    WriteByte(0xCC); //Skip ROM
+    WriteByte(0x4E); // Configure command
+    WriteByte(0x00); // Alarm 
+    WriteByte(0x00); // Alarm 
+    WriteByte(value); // set precision 
 }
