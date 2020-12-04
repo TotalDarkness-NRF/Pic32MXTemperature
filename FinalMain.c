@@ -27,9 +27,21 @@ main () {
     Color();
     initLCD();
     clearDisplay();
+    char tempPrescence;
     char LCDString[32];
     while (1) {
-        sprintf(LCDString, "Temperature:    %d%cC", getTemperature(), 0xDF); // convert to string
+        int temperature = getTemperature();
+        if (temperature < 999) {
+            sprintf(LCDString, "Temperature:    %3.9F%cC",(float)temperature, 0xDF); // convert to string
+            if (!tempPrescence) {
+                tempPrescence = 1;
+                clearDisplay();
+            }
+        } else {
+            sprintf(LCDString, "Temperature:    DEVICE NOT FOUND"); // convert to string
+            tempPrescence = 0;
+        }
+        
         displayString(LCDString);
         Color(); // We need to deal with this using an interrupt, temp takes too long, makes this lag
     }
