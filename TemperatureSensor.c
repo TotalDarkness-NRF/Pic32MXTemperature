@@ -2,8 +2,8 @@
 #include "Buttons.h"
 #include "TemperatureSensor.h"
 
-int getTemperature() { // TODO make this work
-    int finalTemperature = 999;
+uint16_t getTemperature() { // TODO make this work
+   uint16_t temperature = 999;
     if (!ResetPulse()) {
         WriteByte(SKIP_ROM);
         WriteByte(CONVERT_T);
@@ -13,22 +13,25 @@ int getTemperature() { // TODO make this work
         WriteByte(READ_SCRATCHPAD);
        
         //finalTemperature = OW_read_byte() | (int)(OW_read_byte() << 8);
-        unsigned char data[9];
+       uint8_t data[9];
         int i;
         for (i = 0; i <9; i++) {
             data[i] = ReadByte();
         }
-        int TempRead = data[0] | (int)(data[1] << 8);
-        int CountPerC = data[7];
-        int CountRemain = data[6];
-        finalTemperature = TempRead - 0.25 + ((CountPerC - CountRemain)/ CountPerC);
-        
-        
         //TEMPERATURE = TEMP_READ - 0.25 + (COUNT_PER_C - COUNT_REMAIN/COUNT_PER_C)
-        // TODO we need the above fomula to calculate temp, but how?!
+    
+       uint16_t tempRead = data[0];
+       tempRead >>= 1;
+       tempRead = (tempRead*100) - 25;
+       uint8_t CountPerC = data[7];
+       uint8_t  CountRemain = data[6];
+       temperature = tempRead + (((CountPerC - CountRemain) * 100)/ CountPerC);
+       if (data[1] > 0x80)                         // sign bit set, temp is negative
+            temperature = temperature * -1;
+       temperature /= 100;
         ResetPulse();
     }
-    return finalTemperature;
+    return temperature;
 }
 
 void driveOW(unsigned char bit) {
@@ -83,7 +86,7 @@ void WriteBit(unsigned char write_bit) {
  * Read from one wire
  */
 unsigned char ReadByte() {
-    char i, result = 0;   // TODO can this be unsigned ?
+    unsigned char i, result = 0;   // TODO can this be unsigned ?
 
     for (i = 0; i < 8; i++) {
         result >>= 1; // shift the result to get it ready for the next bit to receive
@@ -106,7 +109,7 @@ unsigned char ReadBit() {
 
 unsigned char ReadOW() {
     PIN_DIRECTION = INPUT;
-    return READ_PIN ? 1 : 0;
+    return READ_PIN & 0x01;
 }
 
 /*
