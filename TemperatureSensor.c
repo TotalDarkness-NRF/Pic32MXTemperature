@@ -2,7 +2,7 @@
 #include "Buttons.h"
 #include "TemperatureSensor.h"
 
-int getTemp(void) { // TODO make this work
+int getTemperature(void) { // TODO make this work
     int temperature = 0;
     if (!OW_reset_pulse()) {
         OW_write_byte(0xCC); // Skip ROM
@@ -13,9 +13,8 @@ int getTemp(void) { // TODO make this work
         OW_write_byte(0xBE); // Get all the memory
         temperature = OW_read_byte(); // gets byte from sensor
         temperature = temperature | (int)(OW_read_byte() << 8);
-    //TODO we might be overestimating temp
-    //temperature = temperature*625;
-    //temperature/=1000000;
+        //TODO we might be overestimating temp
+        //TODO temp is not formatted correctly
         OW_reset_pulse();
     }
     return temperature;
@@ -129,14 +128,9 @@ void configurePrecision(unsigned char precision) {
     }
     
     OW_reset_pulse();
-    
     OW_write_byte(0xCC); //Skip ROM
-    
     OW_write_byte(0x4E); // Configure command
-    
     OW_write_byte(0x00); // Alarm 
-    
     OW_write_byte(0x00); // Alarm 
-    
     OW_write_byte(value); // set precision 
 }
