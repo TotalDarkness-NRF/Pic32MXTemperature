@@ -31,7 +31,6 @@ main () {
         sprintf(LCDString, "Temperature:    %d%cC", getTemperature(), 0xDF); // convert to string
         displayString(LCDString);
         Color(); // We need to deal with this using an interrupt, temp takes too long, makes this lag
-        // TODO clear the screen every so often
     }
 }
 
