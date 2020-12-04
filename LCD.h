@@ -25,6 +25,7 @@
 void setPortB(char data);
 void Nybble();
 void initLCD();
+void command(char data);
 void LCDdisplay(char line1[], char line2[]);
 void Color();
 
