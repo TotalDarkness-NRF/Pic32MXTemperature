@@ -2,8 +2,8 @@
 #include "Buttons.h"
 #include "TemperatureSensor.h"
 
-int getTemperature(void) { // TODO make this work
-    int finalTemperature = 0;
+int getTemperature() { // TODO make this work
+    int finalTemperature = 999;
     if (!ResetPulse()) {
         WriteByte(SKIP_ROM);
         WriteByte(CONVERT_T);
@@ -13,16 +13,16 @@ int getTemperature(void) { // TODO make this work
         WriteByte(READ_SCRATCHPAD);
        
         //finalTemperature = OW_read_byte() | (int)(OW_read_byte() << 8);
-        int data[9];
+        unsigned char data[9];
         int i;
         for (i = 0; i <9; i++) {
             data[i] = ReadByte();
         }
-        // TODO see why its always 0.0
         int TempRead = data[0] | (int)(data[1] << 8);
         int CountPerC = data[7];
         int CountRemain = data[6];
         finalTemperature = TempRead - 0.25 + ((CountPerC - CountRemain)/ CountPerC);
+        
         
         //TEMPERATURE = TEMP_READ - 0.25 + (COUNT_PER_C - COUNT_REMAIN/COUNT_PER_C)
         // TODO we need the above fomula to calculate temp, but how?!
