@@ -30,7 +30,7 @@ main () {
     char tempPrescence;
     char LCDString[32];
     while (1) {
-        int temperature = getTemperature();
+        uint16_t temperature = getTemperature();
         if (temperature < 999) {
             sprintf(LCDString, "Temperature:    %3.9F%cC",(float)temperature, 0xDF); // convert to string
             if (!tempPrescence) {
