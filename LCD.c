@@ -53,72 +53,34 @@ void home() {
     Delay(5);
 }
 
-void setEntryMode(int cursorDirection, int blink) { // TODO we can do this better
-    if (cursorDirection && blink) {
-        command(0x07);
-    } else if (cursorDirection) {
-        command(0x06);
-    } else if (blink) {
-        command(0x05);
-    } else {
-        command(0x04);
-    }
+void setEntryMode(int cursorDirection, int blink) {
+    cursorDirection = cursorDirection ? 2 : 0;
+    blink = blink ? 1 : 0;
+    command(0x04 + cursorDirection + blink);
     Delay(1);
 }
 
 
 void setDisplay(int display, int cursor, int blink) {
-    if (display && cursor && blink) {
-         command(0x0F);
-    } else if (display && cursor) {
-         command(0x0E);
-    } else if (display && blink) {
-         command(0x0D);
-    } else if (cursor && blink) {
-         command(0x0B);
-    } else if (display) {
-         command(0x0C);
-    } else if (cursor) {
-        command(0x0A);
-    } else if (blink) {
-        command(0x09);
-    } else {
-        command(0x08);
-    }
+    display = display ? 4 : 0;
+    cursor = cursor? 2 : 0;
+    blink = blink ? 1 : 0;
+    command(0x08 + display + cursor + blink);
     Delay(1);
 }
 
 void setShifting(int cursor, int display) {
-    if (cursor && display) {
-        command(0x1C);
-    } else if (cursor) {
-        command(0x18);
-    } else if (display) {
-        command(0x14);
-    } else {
-        command(0x10);
-    }
+    cursor = cursor? 8 : 0;
+    display = display ? 4 : 0;
+    command(0x10 + cursor + display);
     Delay(1);
 }
 
 void setFunction(int DL, int N, int F) {
-     if (DL && N && F) {
-         command(0x3C);
-    } else if (DL && N) {
-         command(0x38);
-    } else if (DL && F) {
-         command(0x34);
-    } else if (N && F) {
-         command(0x2C);
-    } else if (DL) {
-         command(0x30);
-    } else if (N) {
-        command(0x28);
-    } else if (F) {
-        command(0x24);
-    } else {
-        command(0x20);
-    }
+     DL = DL ? 16 : 0;
+     N = N ? 8 : 0;
+     F = F ? 4 : 0;
+     command(0x20 + DL + N + F);
      Delay(1);
 }
 
