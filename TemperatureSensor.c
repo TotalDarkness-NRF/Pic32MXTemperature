@@ -5,12 +5,12 @@
 int getTemperature(void) { // TODO make this work
     int finalTemperature = 0;
     if (!ResetPulse()) {
-        WriteByte(0xCC); // Skip ROM
-        WriteByte(0x44); // Convert temperature in degrees
-        Delay(750); // TODO what delay?
+        WriteByte(SKIP_ROM);
+        WriteByte(CONVERT_T);
+        Delay(750); // TODO what delay? delay depends on our precision
         ResetPulse();
-        WriteByte(0xCC); // Skip ROM
-        WriteByte(0xBE); // Get all the memory
+        WriteByte(SKIP_ROM);
+        WriteByte(READ_SCRATCHPAD);
        
         //finalTemperature = OW_read_byte() | (int)(OW_read_byte() << 8);
         int data[9];
@@ -36,7 +36,7 @@ void driveOW(unsigned char bit) {
     WRITE_PIN = bit ? 1 : 0;
 }
 
-int ResetPulse(void) {
+int ResetPulse() {
     int presence_detect = 0;
     driveOW(LOW); // pulling the 1-Wire bus low
     Delayus(480); // delay to go from transmit to receive mode
@@ -131,8 +131,8 @@ void configurePrecision(unsigned char precision) {
     }
     
     ResetPulse();
-    WriteByte(0xCC); //Skip ROM
-    WriteByte(0x4E); // Configure command
+    WriteByte(SKIP_ROM);
+    WriteByte(WRITE_SCRATCHPAD);
     WriteByte(0x00); // Alarm 
     WriteByte(0x00); // Alarm 
     WriteByte(value); // set precision 
