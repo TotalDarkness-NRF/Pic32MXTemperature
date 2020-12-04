@@ -23,6 +23,7 @@ main () {
     ANSELB = 0x00;
     TRISA = 0x00;
     TRISB = 0x3F;
+    //configurePrecision(12); // TODO we can get more precise using this
     Color();
     initLCD();
     clearDisplay();
