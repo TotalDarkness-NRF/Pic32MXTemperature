@@ -1,6 +1,7 @@
 #include "Thermometer.h"
 
 int precision = 9;
+char unit = 'C';
 uint8_t scratchPad[9];
 
 int getTemperature() {
@@ -12,8 +13,17 @@ int getTemperature() {
     uint8_t  CountRemain = scratchPad[6];
     uint8_t CountPerC = scratchPad[7];
     temperature = tempRead + (((CountPerC - CountRemain) * 100)/ CountPerC);
-     if (scratchPad[1] >> 7)  // Check MSB for sign bit
+    
+    if (unit == 'K') { // Kelvin
+        temperature += 27315;
+    } else {
+        if (unit == 'F') { // Fahrenheit
+            temperature = ((temperature * 18) + 32000) / 10;
+        }
+        
+        if (scratchPad[1] >> 7)  // Check MSB for sign bit
          temperature = -temperature;
+    }
     ResetPulse();
     return temperature;
 }
@@ -167,4 +177,12 @@ int ifSensorPresent(void) {
     
     int getPrecision() {
         return precision;
+    }
+    
+   char getUnit() {
+        return unit;
+    }
+    
+    void setUnit(char value) {
+        unit = value;
     }
