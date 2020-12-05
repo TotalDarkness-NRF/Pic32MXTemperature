@@ -1,31 +1,18 @@
 #include "Thermometer.h"
 
+uint8_t data[9];
+
 int getTemperature(void) {
-    double temperature = -999999; // Impossible value
-    if (!ResetPulse()) {
-        WriteByte(SKIP_ROM);
-        WriteByte(CONVERT_T);
-        Delay(750); // TODO set delay based on precision
-        ResetPulse();
-        WriteByte(SKIP_ROM);
-        WriteByte(READ_SCRATCHPAD);
-       int i;
-       uint8_t data[9];
-        for (i = 0; i <9; i++) {
-            data[i] = ReadByte();
-        }
-       
-       uint16_t tempRead = data[0];
-       tempRead >>= 1;
-       tempRead = (tempRead*100) - 25;
-       uint8_t  CountRemain = data[6];
-       uint8_t CountPerC = data[7];
-       temperature = tempRead + (((CountPerC - CountRemain) * 100)/ CountPerC);
-       if (data[1] > 0x80) // sign bit set, temp is negative
-            temperature = temperature * -1; 
-        ResetPulse();
-    }
-    return (temperature);
+    double temperature;
+    getScratchpad();
+    uint16_t tempRead = data[0] | data[1] >> 8;
+    tempRead >>= 1;
+    tempRead = (tempRead*100) - 25;
+    uint8_t  CountRemain = data[6];
+    uint8_t CountPerC = data[7];
+    temperature = tempRead + (((CountPerC - CountRemain) * 100)/ CountPerC);
+    ResetPulse();
+    return temperature;
 }
 
 void driveOW(unsigned char bit) {
@@ -34,42 +21,45 @@ void driveOW(unsigned char bit) {
 }
 
 int ResetPulse() {
-    int presence_detect = 0;
-    driveOW(LOW); // pulling the 1-Wire bus low
-    Delayus(480); // delay to go from transmit to receive mode
-    driveOW(HIGH); // pulling the 1-Wire bus high, releases
-    Delayus(70); //  transmits a presence pulse by pulling the 1-Wire bus low
-    presence_detect = ReadOW(); // pulled low for about 60?s to 240?s
-    Delayus(410); // Complete the reset sequence recovery
-    return presence_detect; // 0=presence, 1 = no part
+    driveOW(LOW);
+    Delayus(480);
+    driveOW(HIGH);
+    Delayus(70);
+    int presenceDetect = ReadOW();
+    Delayus(410);
+    return presenceDetect; // 0 = presence, 1 = no part
 }
 
-/*
- * Writing to one wire
- */
 void WriteByte(unsigned char data) {
-    unsigned char i;
-    // Loop to write each bit in the byte, LS-bit first
+    int i;
     for (i = 0; i < 8; i++) {
-        WriteBit(data & 0x01); //Sending LS-bit first
-        data >>= 1; // shift the data byte for the next bit to send
+        WriteBit((data & 0x01));
+        data >>= 1;
     }
 }
 
 void WriteBit(unsigned char write_bit) {
-    if (write_bit) {
-        //writing a bit '1'
-        driveOW(LOW); // Drive the bus low
-        Delayus(6); // pulls early becomes 1
-        driveOW(HIGH); // Release the bus
-        Delayus(64); // Complete the time slot and 10us recovery
-    } else {
-        //writing a bit '0'
-        driveOW(LOW); // Drive the bus low
-        Delayus(60); // Does nothing so becomes zero
-        driveOW(HIGH); // Release the bus
-        Delayus(10);
-    }
+    if (write_bit)
+        WriteBitOne();
+    else
+        WriteBitZero();
+}
+
+void WriteBitOne(void) {
+    // Writing a 1:
+    // Pull early sets wire to one followed by a delay of 6us then a HIGH
+    driveOW(LOW);
+    Delayus(6);
+    driveOW(HIGH);
+    Delayus(64); //The remainder of the time has to be completed for the cycle to total 70us
+}
+void WriteBitZero(void) {
+    //Writing a Zero
+    // Pull early sets wire to one followed by a delay of 6us then a HIGH
+    driveOW(LOW);
+    Delayus(60);
+    driveOW(HIGH);
+    Delayus(10); // The remainder of the time has to be completed for the cycle to total 70us
 }
 
 /*
@@ -81,7 +71,6 @@ void WriteBit(unsigned char write_bit) {
  */
 unsigned char ReadByte() {
     unsigned char i, result = 0;   // TODO can this be unsigned ?
-
     for (i = 0; i < 8; i++) {
         result >>= 1; // shift the result to get it ready for the next bit to receive
         if (ReadBit())
@@ -126,11 +115,34 @@ void configurePrecision(unsigned char precision) {
             value = 96;
             break;       
     }
-    
     ResetPulse();
     WriteByte(SKIP_ROM);
     WriteByte(WRITE_SCRATCHPAD);
     WriteByte(0x00); // Alarm 
     WriteByte(0x00); // Alarm 
     WriteByte(value); // set precision 
+}
+
+/**
+ * Checks if the temperature is a reasonable number
+ * @return true if sensor is present; else false
+ */
+int ifSensorPresent(void) {
+    return !ResetPulse();
+}
+
+/**
+ * Get the Scratchpad object
+ * @return uint8_t containing the bytes that were read from the Scratchpad
+ */
+    void getScratchpad(void) {
+    int i;
+    WriteByte(SKIP_ROM);
+    WriteByte(CONVERT_T);
+    Delay(750); // TODO set delay based on precision
+    ResetPulse();
+    WriteByte(SKIP_ROM);
+    WriteByte(READ_SCRATCHPAD);
+    for (i = 0; i < 9; i++)
+        data[i] = ReadByte();
 }
