@@ -100,34 +100,6 @@ unsigned char ReadOW() {
  * End of reading from one wire
  */
  
-void configurePrecision(int type) {
-    unsigned char value;
-    switch(type) {
-        case 9:
-            precision = 9;
-            value = 0;
-            break;
-        case 10:
-            precision = 10;
-            value = 32;
-            break;
-        case 11:
-            precision = 11;
-            value = 64;
-            break;
-        defualt:
-            precision = 12;
-            value = 96;
-            break;
-    }
-    ResetPulse();
-    WriteByte(SKIP_ROM);
-    WriteByte(WRITE_SCRATCHPAD);
-    WriteByte(0x00); // Alarm 
-    WriteByte(0x00); // Alarm 
-    WriteByte(value); // set precision 
-}
-
 int getCoversionDelay() {
     switch(precision) {
         case 9:
@@ -136,7 +108,7 @@ int getCoversionDelay() {
             return 188;
         case 11:
             return 375;
-        defualt:
+        case 12:
             return 750;
     }
 }
@@ -155,10 +127,42 @@ int ifSensorPresent(void) {
     int i;
     WriteByte(SKIP_ROM);
     WriteByte(CONVERT_T);
-    Delay(getCoversionDelay()); // TODO set delay based on precision
+    Delay(getCoversionDelay());
     ResetPulse();
     WriteByte(SKIP_ROM);
     WriteByte(READ_SCRATCHPAD);
     for (i = 0; i < 9; i++)
         data[i] = ReadByte();
 }
+    
+    void setPrecision(int type) {
+    int value;
+    switch(type) {
+        case 9:
+            precision = 9;
+            value = 0;
+            break;
+        case 10:
+            precision = 10;
+            value = 32;
+            break;
+        case 11:
+            precision = 11;
+            value = 64;
+            break;
+        case 12:
+            precision = 12;
+            value = 96;
+            break;
+    }
+    ResetPulse();
+    WriteByte(SKIP_ROM);
+    WriteByte(WRITE_SCRATCHPAD);
+    WriteByte(0x00); // Alarm 
+    WriteByte(0x00); // Alarm 
+    WriteByte(value); // set precision 
+}
+    
+    int getPrecsion() {
+        return precision;
+    }
