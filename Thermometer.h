@@ -80,7 +80,7 @@ void WriteBitZero(void);
 int getCoversionDelay(void);
 int ifSensorPresent(void);
 void setPrecision(int type);
-int getPrecsion(void);
+int getPrecision(void);
 
 /* 
  *  Prototypes for the LCD functions 
