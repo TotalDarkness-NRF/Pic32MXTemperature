@@ -1,5 +1,6 @@
 #include "Thermometer.h"
 
+int precision = 9;
 uint8_t data[9];
 
 int getTemperature(void) {
@@ -99,21 +100,25 @@ unsigned char ReadOW() {
  * End of reading from one wire
  */
  
-void configurePrecision(unsigned char precision) {
+void configurePrecision(int type) {
     unsigned char value;
-    switch(precision) {
+    switch(type) {
         case 9:
+            precision = 9;
             value = 0;
             break;
         case 10:
+            precision = 10;
             value = 32;
             break;
         case 11:
+            precision = 11;
             value = 64;
             break;
         defualt:
+            precision = 12;
             value = 96;
-            break;       
+            break;
     }
     ResetPulse();
     WriteByte(SKIP_ROM);
@@ -123,23 +128,34 @@ void configurePrecision(unsigned char precision) {
     WriteByte(value); // set precision 
 }
 
+int getCoversionDelay() {
+    switch(precision) {
+        case 9:
+            return 94;
+        case 10:
+            return 188;
+        case 11:
+            return 375;
+        defualt:
+            return 750;
+    }
+}
+
 /**
- * Checks if the temperature is a reasonable number
- * @return true if sensor is present; else false
+ * Check if the sensor is present
  */
 int ifSensorPresent(void) {
     return !ResetPulse();
 }
 
-/**
- * Get the Scratchpad object
- * @return uint8_t containing the bytes that were read from the Scratchpad
+/*
+ * Get the contents of the scratchpad
  */
     void getScratchpad(void) {
     int i;
     WriteByte(SKIP_ROM);
     WriteByte(CONVERT_T);
-    Delay(750); // TODO set delay based on precision
+    Delay(getCoversionDelay()); // TODO set delay based on precision
     ResetPulse();
     WriteByte(SKIP_ROM);
     WriteByte(READ_SCRATCHPAD);
