@@ -6,6 +6,9 @@ void displayString(char *string) {
   for(i=0;string[i]!='\0';i++) {
       if (!(i %16) && i)  // check if line can fit on a line and is not 0
           nextLine();
+      if (string[i] == 'C' && string[i + 1] == '\0') {
+          write(0xDF); // put degree symbol
+      }
       write(string[i]);
   }
 }
