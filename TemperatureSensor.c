@@ -2,8 +2,8 @@
 #include "Buttons.h"
 #include "TemperatureSensor.h"
 
-uint16_t getTemperature() { // TODO make this work
-   uint16_t temperature = 999;
+double getTemperature(void) { // TODO make this work
+    double temperature = 999;
     if (!ResetPulse()) {
         WriteByte(SKIP_ROM);
         WriteByte(CONVERT_T);
@@ -13,22 +13,27 @@ uint16_t getTemperature() { // TODO make this work
         WriteByte(READ_SCRATCHPAD);
        
         //finalTemperature = OW_read_byte() | (int)(OW_read_byte() << 8);
+       int i;
        uint8_t data[9];
-        int i;
         for (i = 0; i <9; i++) {
             data[i] = ReadByte();
         }
         //TEMPERATURE = TEMP_READ - 0.25 + (COUNT_PER_C - COUNT_REMAIN/COUNT_PER_C)
-    
+       /*
        uint16_t tempRead = data[0];
        tempRead >>= 1;
        tempRead = (tempRead*100) - 25;
-       uint8_t CountPerC = data[7];
        uint8_t  CountRemain = data[6];
+       uint8_t CountPerC = data[7];
        temperature = tempRead + (((CountPerC - CountRemain) * 100)/ CountPerC);
        if (data[1] > 0x80)                         // sign bit set, temp is negative
             temperature = temperature * -1;
        temperature /= 100;
+        */
+        int tempRead = data[0] | (int)(data[1] << 8);
+        double remainder = (double)(data[7] - data[6])/(double)data[7];
+        temperature = tempRead - 0.25 + remainder;
+        
         ResetPulse();
     }
     return temperature;
