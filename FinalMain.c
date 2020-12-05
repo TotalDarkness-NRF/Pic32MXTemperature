@@ -20,13 +20,14 @@ void main (void) {
         if (ifSensorPresent()) {
             float temperature = (float) getTemperature() / 100.0;
             // For whatever reason compiler hates returning floating point numbers
-            sprintf(LCDString, "Temperature:    %3.9f%cC",temperature, 0xDF); // convert to string
+            sprintf(LCDString, "Temperature:    %3.2f%cC",temperature, 0xDF);
+            // TODO set decimal places based on precision
             if (!tempPrescence) {
                 tempPrescence = 1;
                 clearDisplay();
             }
         } else {
-            sprintf(LCDString, "Temperature:    SENSOR NOT FOUND"); // convert to string
+            sprintf(LCDString, "Temperature:    SENSOR NOT FOUND");
             tempPrescence = 0;
         }
         displayString(LCDString);
