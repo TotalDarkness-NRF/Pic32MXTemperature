@@ -68,16 +68,17 @@
  */
 int getTemperature(void);
 void DriveOW(unsigned char Bit);
-int ResetPulse();
+int ResetPulse(void);
 void getScratchpad(void);
-unsigned char ReadByte();
-unsigned char ReadBit();
-unsigned char ReadOW();
+unsigned char ReadByte(void);
+unsigned char ReadBit(void);
+unsigned char ReadOW(void);
 void WriteByte(unsigned char write_data);
 void WriteBit(unsigned char write_data);
 void WriteBitOne(void);
 void WriteBitZero(void);
-void configurePrecision(unsigned char precision);
+void configurePrecision(int type);
+int getCoversionDelay(void);
 int ifSensorPresent(void);
 
 /* 
