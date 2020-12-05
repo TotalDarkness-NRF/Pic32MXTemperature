@@ -2,6 +2,8 @@
 
  // TODO maybe have interupts instead, delay do to getting temperature
 
+char text[32];
+
 void Color() {
         if (BUTTON4) {
             RED = !RED;
@@ -19,21 +21,41 @@ void Color() {
 }
 
 void ChangePrecision() {
-    if(BUTTON3) {
+    if (BUTTON2) {
         int precision = getPrecision();
-        if (precision >= 12) 
-            setPrecision(9);
-        else setPrecision(++precision);
-         clearDisplay();
-         char text[32];
-         sprintf(text, "Precision set to%D", getPrecision());
-         displayString(text);
-         Delay(1000);
+        precision = precision >= 12 ? 9 : ++precision;
+        setPrecision(precision);
+        clearDisplay();
+        sprintf(text, "Precision set to%D", precision);
+        displayString(text);
+        Delay(1000);
+        clearDisplay();
     }
 }
 
 void ChangeTemperatureUnit() {
-    
+    if (BUTTON3) {
+        char unit = getUnit();
+        if (unit == 'F') {
+            unit = 'K';
+        } else if (unit == 'C') {
+            unit = 'F';
+        } else {
+            unit = 'C';
+        }
+        setUnit(unit);
+        clearDisplay();
+        if (unit == 'K') {
+            sprintf(text, "Temperature set to Kelvin");
+        } else if (unit == 'F') {
+            sprintf(text, "Temperature set to Fahrenheit");
+        } else {
+            sprintf(text, "Temperature set to Celsius");
+        }
+        displayString(text);
+        Delay(1000);
+        clearDisplay();
+    }
 }
 
 void ShowTime() {
