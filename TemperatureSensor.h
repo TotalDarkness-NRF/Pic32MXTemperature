@@ -34,7 +34,7 @@ unsigned char ReadBit();
 unsigned char ReadOW();
 void WriteByte(unsigned char write_data);
 void WriteBit(unsigned char write_data);
-uint16_t getTemperature();
+double getTemperature(void);
 void configurePrecision(unsigned char precision);
 
 #endif
