@@ -112,7 +112,5 @@ void initLCD() {
 
     setEntryMode(1,0); //Entry Mode set
     
-    configurePrecision(12);
-    
     clearDisplay(); 
 }
