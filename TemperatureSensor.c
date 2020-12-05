@@ -1,17 +1,19 @@
 #include "Thermometer.h"
 
 int precision = 9;
-uint8_t data[9];
+uint8_t scratchPad[9];
 
-int getTemperature(void) {
+int getTemperature() {
     double temperature;
     getScratchpad();
-    uint16_t tempRead = data[0] | data[1] >> 8;
-    tempRead >>= 1;
+    uint16_t tempRead = scratchPad[0];
+    tempRead >>= 1; //truncate the LSB of the temperature reading by 0.5
     tempRead = (tempRead*100) - 25;
-    uint8_t  CountRemain = data[6];
-    uint8_t CountPerC = data[7];
+    uint8_t  CountRemain = scratchPad[6];
+    uint8_t CountPerC = scratchPad[7];
     temperature = tempRead + (((CountPerC - CountRemain) * 100)/ CountPerC);
+     if (scratchPad[1] >> 7)  // Check MSB for sign bit
+         temperature = -temperature;
     ResetPulse();
     return temperature;
 }
@@ -132,7 +134,7 @@ int ifSensorPresent(void) {
     WriteByte(SKIP_ROM);
     WriteByte(READ_SCRATCHPAD);
     for (i = 0; i < 9; i++)
-        data[i] = ReadByte();
+        scratchPad[i] = ReadByte();
 }
     
     void setPrecision(int type) {
