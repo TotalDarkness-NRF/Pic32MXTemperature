@@ -15,7 +15,6 @@ void main (void) {
     ANSELB = 0x00;
     TRISA = 0x00;
     TRISB = 0x3F;
-    setPrecision(9);
     initLCD();
     while (1) {
         if (ifSensorPresent()) {
