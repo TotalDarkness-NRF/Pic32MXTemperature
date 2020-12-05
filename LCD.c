@@ -57,7 +57,6 @@ void setEntryMode(int cursorDirection, int blink) {
     Delay(1);
 }
 
-
 void setDisplay(int display, int cursor, int blink) {
     display = display ? 4 : 0;
     cursor = cursor ? 2 : 0;
@@ -81,7 +80,7 @@ void setFunction(int DL, int N, int F) {
      Delay(1);
 }
 
-void displayString(char *string){
+void displayString(char *string) {
   int i;
   home();
   for(i=0;string[i]!='\0';i++) {
@@ -112,4 +111,8 @@ void initLCD() {
     setDisplay(1,0,0);  //Display ON; No cursor
 
     setEntryMode(1,0); //Entry Mode set
+    
+    configurePrecision(12);
+    
+    clearDisplay(); 
 }
