@@ -1,6 +1,4 @@
-#include <p32xxxx.h>
-#include "LCD.h"
-#include "Buttons.h"
+#include "Thermometer.h"
 
 void Nybble() {
     E = HIGH;
@@ -10,7 +8,6 @@ void Nybble() {
 }
 
 void setPortB(char i) {
-    PORTB;
     DB4 = i & 0x01;
     i >>= 1;
     DB5 = i & 0x01;
@@ -24,9 +21,9 @@ void command(char data) {
     setPortB(data >> 4); //put data on output Port
     RS = LOW; // Send command
     R_W = LOW; //write
-    Nybble(); // Allow to send
+    Nybble();
     setPortB(data & 0x0F); //put data on output Port
-    Nybble(); // Allow to send
+    Nybble();
 }
 
 void write(char data) {
@@ -63,14 +60,14 @@ void setEntryMode(int cursorDirection, int blink) {
 
 void setDisplay(int display, int cursor, int blink) {
     display = display ? 4 : 0;
-    cursor = cursor? 2 : 0;
+    cursor = cursor ? 2 : 0;
     blink = blink ? 1 : 0;
     command(0x08 + display + cursor + blink);
     Delay(1);
 }
 
 void setShifting(int cursor, int display) {
-    cursor = cursor? 8 : 0;
+    cursor = cursor ? 8 : 0;
     display = display ? 4 : 0;
     command(0x10 + cursor + display);
     Delay(1);

@@ -1,6 +1,4 @@
-#include <p32xxxx.h>
-#include "TemperatureSensor.h"
-#include<stdio.h>
+#include "Thermometer.h"
 
 #pragma config FNOSC = FRCPLL       // Internal Fast RC oscillator (8 MHz) w/ PLL
 #pragma config FPLLIDIV = DIV_2     // Divide FRC before PLL (now 4 MHz)
@@ -10,28 +8,20 @@
 #pragma config ICESEL = ICS_PGx1    // ICE/ICD Comm Channel Select
 #pragma config JTAGEN = OFF         // Disable JTAG
 #pragma config FSOSCEN = OFF        // Disable Secondary Oscillator
- 
-/*
- *  Global Constants
- */
-#define SYS_FREQ 40000000
-
-void Delayus(unsigned int us);
-void Delay(unsigned int ms);
 
 main () {
     ANSELA = 0x00;
     ANSELB = 0x00;
     TRISA = 0x00;
     TRISB = 0x3F;
-    configurePrecision(12); // TODO we can get more precise using this
+    configurePrecision(12);
     Color();
     initLCD();
-    clearDisplay();
+    clearDisplay(); 
     char tempPrescence;
     char LCDString[32];
     while (1) {
-        float temperature = (float)getTemperature()/100.0;
+        float temperature = (float) getTemperature() / 100.0;
         // For whatever reason compiler hates returning floating point numbers
         if (temperature > -999) { // Check if impossible value
             sprintf(LCDString, "Temperature:    %3.9f%cC",temperature, 0xDF); // convert to string
@@ -40,7 +30,7 @@ main () {
                 clearDisplay();
             }
         } else {
-            sprintf(LCDString, "Temperature:    DEVICE NOT FOUND"); // convert to string
+            sprintf(LCDString, "Temperature:    SENSOR NOT FOUND"); // convert to string
             tempPrescence = 0;
         }
         

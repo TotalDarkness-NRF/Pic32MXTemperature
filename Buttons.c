@@ -1,6 +1,4 @@
-#include <p32xxxx.h>
-#include "Buttons.h"
-#include "LCD.h"
+#include "Thermometer.h"
 
 void Color() { // TODO maybe have interupts instead, delay do to getting temperature
         if (BUTTON4) {

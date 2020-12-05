@@ -1,6 +1,4 @@
-#include <p32xxxx.h>
-#include "Buttons.h"
-#include "TemperatureSensor.h"
+#include "Thermometer.h"
 
 int getTemperature(void) {
     double temperature = -999999; // Impossible value
@@ -32,7 +30,7 @@ int getTemperature(void) {
 
 void driveOW(unsigned char bit) {
     PIN_DIRECTION = OUTPUT;
-    WRITE_PIN = bit ? 1 : 0;
+    WRITE_PIN = bit & 0x01;
 }
 
 int ResetPulse() {
@@ -40,7 +38,7 @@ int ResetPulse() {
     driveOW(LOW); // pulling the 1-Wire bus low
     Delayus(480); // delay to go from transmit to receive mode
     driveOW(HIGH); // pulling the 1-Wire bus high, releases
-    Delayus(70); //  transmits a presence pulse by pullng the 1-Wire bus low
+    Delayus(70); //  transmits a presence pulse by pulling the 1-Wire bus low
     presence_detect = ReadOW(); // pulled low for about 60?s to 240?s
     Delayus(410); // Complete the reset sequence recovery
     return presence_detect; // 0=presence, 1 = no part
