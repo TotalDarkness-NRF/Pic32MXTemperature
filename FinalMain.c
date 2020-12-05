@@ -1,4 +1,5 @@
 #include <p32xxxx.h>
+#include "TemperatureSensor.h"
 #include<stdio.h>
 
 #pragma config FNOSC = FRCPLL       // Internal Fast RC oscillator (8 MHz) w/ PLL
@@ -29,11 +30,11 @@ main () {
     clearDisplay();
     char tempPrescence;
     char LCDString[32];
-    double temperature;
     while (1) {
-        temperature = getTemperature();
-        if (temperature < 999) {
-            sprintf(LCDString, "Temperature:    %3.9F%cC",temperature, 0xDF); // convert to string
+        float temperature = (float)getTemperature()/100.0;
+        // For whatever reason compiler hates returning floating point numbers
+        if (temperature > -999) { // Check if impossible value
+            sprintf(LCDString, "Temperature:    %3.9f%cC",temperature, 0xDF); // convert to string
             if (!tempPrescence) {
                 tempPrescence = 1;
                 clearDisplay();
