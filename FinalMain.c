@@ -22,13 +22,13 @@ void main (void) {
             // For whatever reason compiler hates returning floating point numbers
             int precision = getPrecision();
             if (precision == 9) {
-                sprintf(LCDString, "Temperature:    %3.2f%cC",temperature, 0xDF);
+                sprintf(LCDString, "Temperature:    %3.2f%c",temperature, getUnit());
             } else if (precision == 10) {
-                sprintf(LCDString, "Temperature:    %3.3f%cC",temperature, 0xDF);
+                sprintf(LCDString, "Temperature:    %3.3f%c",temperature, getUnit());
             } else if (precision == 11) {
-                sprintf(LCDString, "Temperature:    %3.6f%cC",temperature, 0xDF);
+                sprintf(LCDString, "Temperature:    %3.6f%c",temperature, getUnit());
             } else {
-                sprintf(LCDString, "Temperature:    %3.9f%cC",temperature, 0xDF);
+                sprintf(LCDString, "Temperature:    %3.9f%c",temperature, getUnit());
             }
             if (!tempPrescence) {
                 tempPrescence = 1;
@@ -41,6 +41,7 @@ void main (void) {
         displayString(LCDString);
         Color();
         ChangePrecision();
+        ChangeTemperatureUnit();
     }
 }
 
