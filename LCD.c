@@ -1,10 +1,13 @@
 #include "Thermometer.h"
 
-void Nybble() {
-    E = HIGH;
-    Delay(1); //enable pulse width >= 300ns
-    E = LOW; //Clock enable: falling edge
-    Delay(1); //enable pulse width >= 300ns
+void displayString(char *string) {
+  int i;
+  home();
+  for(i=0;string[i]!='\0';i++) {
+      if (!(i %16) && i)  // check if line can fit on a line and is not 0
+          nextLine();
+      write(string[i]);
+  }
 }
 
 void setPortB(char i) {
@@ -17,17 +20,8 @@ void setPortB(char i) {
     DB7 = i & 0x01;
 }
 
-void command(char data) {
-    setPortB(data >> 4); //put data on output Port
-    RS = LOW; // Send command
-    R_W = LOW; //write
-    Nybble();
-    setPortB(data & 0x0F); //put data on output Port
-    Nybble();
-}
-
 void write(char data) {
-    setPortB(data >> 4); // put data on output Port
+    setPortB(data >> 4);
     RS = HIGH; // Send data
     R_W = LOW; // write
     Nybble();
@@ -35,6 +29,17 @@ void write(char data) {
     Nybble();
 }
 
+/*
+ * Start of LCD commands
+ */
+void command(char data) {
+    setPortB(data >> 4);
+    RS = LOW; // Send command
+    R_W = LOW; //write
+    Nybble();
+    setPortB(data & 0x0F);
+    Nybble();
+}
 
 void nextLine() {
 	command(0xC0);
@@ -79,38 +84,39 @@ void setFunction(int DL, int N, int F) {
      command(0x20 + DL + N + F);
      Delay(1);
 }
+/*
+ *  End of LCD commands
+ */
 
-void displayString(char *string) {
-  int i;
-  home();
-  for(i=0;string[i]!='\0';i++) {
-      if (!(i %16) && i)  // check if line can fit on a line and is not 0
-          nextLine();
-      write(string[i]);
-  }
+void Nybble() {
+    E = HIGH;
+    Delay(1);
+    E = LOW; //Clock enable: falling edge
+    Delay(1);
 }
 
 void initLCD() {
     setPortB(0);
-    Delay(100); //Wait >40 msec after power is applied
-    setPortB(0x30); //put 0x30 on the output port
-    Delay(30); //must wait 5ms, busy flag not available
-    Nybble(); //command 0x30 = Wake up
-    Delay(10); //must wait 160us, busy flag not available
-    Nybble(); //command 0x30 = Wake up #2
-    Delay(10); //must wait 160us, busy flag not available
-    Nybble(); //command 0x30 = Wake up #3
-    Delay(10); //can check busy flag now instead of delay
-    setPortB(0x20); //put 0x20 on the output port
-    Nybble(); //Function set: 4-bit interface
-
-    setFunction(0,1,0); //Function set: 4-bit/2-line
-
-    setShifting(0,0); //Set cursor
-
-    setDisplay(1,0,0);  //Display ON; No cursor
-
-    setEntryMode(1,0); //Entry Mode set
+    Delay(100);
+    setPortB(0x30);
+    Delay(30);
+    Nybble();
+    Delay(10);
+    Nybble();
+    Delay(10);
+    Nybble();
+    Delay(10);
+    setPortB(0x20);
+    Nybble();
+    // Above deals with waking up the LCD and insuring it will go in 4-bit mode
     
+    setFunction(0,1,0); //Function set: 4-bit/2-line
+    setShifting(0,0); //Set cursor
+    setDisplay(1,0,0);  //Display ON; No cursor
+    setEntryMode(1,0); //Entry Mode set
     clearDisplay(); 
+    
+    RED = HIGH;
+    BLUE = LOW;
+    GREEN = LOW;
 }
