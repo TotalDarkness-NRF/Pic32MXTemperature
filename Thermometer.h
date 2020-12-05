@@ -87,6 +87,8 @@ int getPrecsion(void);
  */
 void initLCD(void);
 void LCDdisplay(char line1[], char line2[]);
+void displayString(char *string);
+void write(char data);
 void setPortB(char data);
 void Nybble(void);
 void command(char data);
@@ -97,7 +99,6 @@ void setEntryMode(int cursorDirection, int blink);
 void setDisplay(int display, int cursor, int blink);
 void setShifting(int cursor, int display);
 void setFunction(int DL, int N, int F);
-void displayString(char *string);
 /*
  *  Prototypes for the button functions
  */
