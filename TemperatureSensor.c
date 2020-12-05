@@ -165,6 +165,6 @@ int ifSensorPresent(void) {
     WriteByte(value); // set precision 
 }
     
-    int getPrecsion() {
+    int getPrecision() {
         return precision;
     }
