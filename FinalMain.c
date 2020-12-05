@@ -20,8 +20,16 @@ void main (void) {
         if (ifSensorPresent()) {
             float temperature = (float) getTemperature() / 100.0;
             // For whatever reason compiler hates returning floating point numbers
-            sprintf(LCDString, "Temperature:    %3.2f%cC",temperature, 0xDF);
-            // TODO set decimal places based on precision
+            int precision = getPrecision();
+            if (precision == 9) {
+                sprintf(LCDString, "Temperature:    %3.2f%cC",temperature, 0xDF);
+            } else if (precision == 10) {
+                sprintf(LCDString, "Temperature:    %3.3f%cC",temperature, 0xDF);
+            } else if (precision == 11) {
+                sprintf(LCDString, "Temperature:    %3.6f%cC",temperature, 0xDF);
+            } else {
+                sprintf(LCDString, "Temperature:    %3.9f%cC",temperature, 0xDF);
+            }
             if (!tempPrescence) {
                 tempPrescence = 1;
                 clearDisplay();
