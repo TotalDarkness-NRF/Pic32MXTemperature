@@ -77,9 +77,10 @@ void WriteByte(unsigned char write_data);
 void WriteBit(unsigned char write_data);
 void WriteBitOne(void);
 void WriteBitZero(void);
-void configurePrecision(int type);
 int getCoversionDelay(void);
 int ifSensorPresent(void);
+void setPrecision(int type);
+int getPrecsion(void);
 
 /* 
  *  Prototypes for the LCD functions 
@@ -97,12 +98,13 @@ void setDisplay(int display, int cursor, int blink);
 void setShifting(int cursor, int display);
 void setFunction(int DL, int N, int F);
 void displayString(char *string);
-
 /*
  *  Prototypes for the button functions
  */
 void Color(void);
-
+void ChangePrecision(void);
+void ChangeTemperatureUnit(void);
+void ShowTime(void);
 /*
  *  Prototypes for the delay functions
  */
