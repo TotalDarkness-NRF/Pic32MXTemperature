@@ -9,21 +9,17 @@
 #pragma config JTAGEN = OFF         // Disable JTAG
 #pragma config FSOSCEN = OFF        // Disable Secondary Oscillator
 
-main () {
+void main (void) {
+    char tempPrescence, LCDString[32];
     ANSELA = 0x00;
     ANSELB = 0x00;
     TRISA = 0x00;
     TRISB = 0x3F;
-    configurePrecision(12);
-    Color();
     initLCD();
-    clearDisplay(); 
-    char tempPrescence;
-    char LCDString[32];
     while (1) {
-        float temperature = (float) getTemperature() / 100.0;
-        // For whatever reason compiler hates returning floating point numbers
-        if (temperature > -999) { // Check if impossible value
+        if (ifSensorPresent()) {
+            float temperature = (float) getTemperature() / 100.0;
+            // For whatever reason compiler hates returning floating point numbers
             sprintf(LCDString, "Temperature:    %3.9f%cC",temperature, 0xDF); // convert to string
             if (!tempPrescence) {
                 tempPrescence = 1;
@@ -33,9 +29,8 @@ main () {
             sprintf(LCDString, "Temperature:    SENSOR NOT FOUND"); // convert to string
             tempPrescence = 0;
         }
-        
         displayString(LCDString);
-        Color(); // We need to deal with this using an interrupt, temp takes too long, makes this lag
+        Color();
     }
 }
 
