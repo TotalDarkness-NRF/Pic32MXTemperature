@@ -29,10 +29,11 @@ main () {
     clearDisplay();
     char tempPrescence;
     char LCDString[32];
+    double temperature;
     while (1) {
-        uint16_t temperature = getTemperature();
+        temperature = getTemperature();
         if (temperature < 999) {
-            sprintf(LCDString, "Temperature:    %3.9F%cC",(float)temperature, 0xDF); // convert to string
+            sprintf(LCDString, "Temperature:    %3.9F%cC",temperature, 0xDF); // convert to string
             if (!tempPrescence) {
                 tempPrescence = 1;
                 clearDisplay();
