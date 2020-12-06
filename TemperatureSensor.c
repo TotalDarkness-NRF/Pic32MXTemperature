@@ -5,27 +5,26 @@ char unit = 'C';
 uint8_t scratchPad[9];
 
 int getTemperature() {
-    double temperature;
+    float temperature;
     getScratchpad();
-    uint16_t tempRead = scratchPad[0];
-    tempRead >>= 1; //truncate the LSB of the temperature reading by 0.5
-    tempRead = (tempRead*100) - 25;
-    uint8_t  CountRemain = scratchPad[6];
-    uint8_t CountPerC = scratchPad[7];
-    temperature = tempRead + (((CountPerC - CountRemain) * 100)/ CountPerC);
+    /*
+     * To get temperatature we use the formula
+     * Temperature = (LSB truncated 0.5 degrees Celciuis) - 0.25 + (CountPerC - CountRemain)/ CountPerC
+     */
+    temperature =  (scratchPad[0] >> 1)  - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
     
     if (unit == 'K') { // Kelvin
-        temperature += 27315;
+        temperature += 273.15;
     } else {
-        if (unit == 'F') { // Fahrenheit
-            temperature = ((temperature * 18) + 32000) / 10;
-        }
-        
         if (scratchPad[1] >> 7)  // Check MSB for sign bit
          temperature = -temperature;
+        
+        if (unit == 'F') { // Fahrenheit
+            temperature = temperature * 1.8 + 32;
+        }  
     }
     ResetPulse();
-    return temperature;
+    return temperature * 1000;
 }
 
 void driveOW(unsigned char bit) {
