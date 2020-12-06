@@ -18,7 +18,7 @@ void main (void) {
     initLCD();
     while (1) {
         if (ifSensorPresent()) {
-            float temperature = (float) getTemperature() / 1000;
+            float temperature = (float) getTemperature() / 100;
             int precision = getPrecision();
             // For whatever reason compiler hates returning floating point numbers
             if (precision == 9) {
