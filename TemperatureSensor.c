@@ -8,8 +8,8 @@ int getTemperature() {
     float temperature;
     getScratchpad();
     /*
-     * To get temperatature we use the formula
-     * Temperature = (LSB truncated 0.5 degrees Celciuis) - 0.25 + (CountPerC - CountRemain)/ CountPerC
+     * To get temperature we use the formula
+     * Temperature = (LSB truncated 0.5 degrees Celsius) - 0.25 + (CountPerC - CountRemain)/CountPerC
      */
     temperature =  (scratchPad[0] >> 1)  - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
     
@@ -24,7 +24,7 @@ int getTemperature() {
         }  
     }
     ResetPulse();
-    return temperature * 1000;
+    return temperature * 100;
 }
 
 void driveOW(unsigned char bit) {
@@ -42,6 +42,9 @@ int ResetPulse() {
     return presenceDetect; // 0 = presence, 1 = no part
 }
 
+/*
+ * Write to one wire
+ */
 void WriteByte(unsigned char data) {
     int i;
     for (i = 0; i < 8; i++) {
@@ -73,7 +76,6 @@ void WriteBitZero(void) {
     driveOW(HIGH);
     Delayus(10); // The remainder of the time has to be completed for the cycle to total 70us
 }
-
 /*
  * End of writing to one wire
  */
@@ -106,7 +108,6 @@ unsigned char ReadOW() {
     PIN_DIRECTION = INPUT;
     return READ_PIN & 0x01;
 }
-
 /*
  * End of reading from one wire
  */
@@ -124,7 +125,7 @@ int getCoversionDelay() {
     }
 }
 
-/**
+/*
  * Check if the sensor is present
  */
 int ifSensorPresent(void) {
