@@ -10,33 +10,23 @@ int getTemperature() {
     getScratchpad();
     /*
      * To get temperature we use the formula
-     * Temperature = (LSB truncated 0.5 degrees Celsius) - 0.25 + (CountPerC - CountRemain)/CountPerC
+     * Temperature = (LSB truncating the 0.5°C bit (bit 0)) - 0.25 + (CountPerC - CountRemain)/CountPerC
      */
-    // TODO I fixed issue where negative would read as the 2's compliment, but now there must be a better way
-    
-    /*
-     if (scratchPad[1] >> 7)  // Check MSB for sign bit, means the number we see is negate, perform a 2 conjugate
-         scratchPad[0] = -scratchPad[0];
-     */
-    
-    uint8_t tempRead = !isSigned() ? (scratchPad[0] >> 1) : (-scratchPad[0] >> 1);
-    
+    uint8_t tempRead = (!isSigned() ? scratchPad[0]:-scratchPad[0]) >> 1;
     temperature = tempRead - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
     
      if (isSigned()) temperature = -temperature;
-    
+    // TODO is there a point to getting average temp? Maybe just change button to switch view modes
     if (averageTemperature == -999) averageTemperature = temperature;
     else  averageTemperature = (averageTemperature + temperature) / 2.0;
+    
     return  convertTemperature(temperature);
 }
 
 int convertTemperature(float temperature) {
-    if (unit == 'K') { // Kelvin
-        temperature += 273.15;
-    } else  if (unit == 'F') { // Fahrenheit
-            temperature = temperature * 1.8 + 32;
-    }  
-        return temperature * 100;
+    if (unit == 'K') temperature += 273.15; // Kelvin
+    else  if (unit == 'F') temperature = temperature * 1.8 + 32; // Fahrenheit
+    return temperature * 100;
 }
 
 int isSigned() {
