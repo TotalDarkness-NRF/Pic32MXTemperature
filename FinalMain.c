@@ -43,6 +43,7 @@ void main (void) {
         Color();
         ChangePrecision();
         ChangeTemperatureUnit();
+        ShowUpimeAndAverage();
     }
 }
 
