@@ -1,6 +1,7 @@
 #include "Thermometer.h"
 
 int precision = 9;
+float averageTemperature = -999;
 char unit = 'C';
 uint8_t scratchPad[9];
 
@@ -13,18 +14,23 @@ int getTemperature() {
      */
     temperature =  (scratchPad[0] >> 1)  - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
     
+    if (scratchPad[1] >> 7)  // Check MSB for sign bit
+         temperature = -temperature;
+    
+    if (averageTemperature == -999) averageTemperature = temperature;
+    else  averageTemperature = (averageTemperature + temperature) / 2.0;
+    
+    ResetPulse();
+    return  convertTemperature(temperature);
+}
+
+int convertTemperature(float temperature) {
     if (unit == 'K') { // Kelvin
         temperature += 273.15;
-    } else {
-        if (scratchPad[1] >> 7)  // Check MSB for sign bit
-         temperature = -temperature;
-        
-        if (unit == 'F') { // Fahrenheit
+    } else  if (unit == 'F') { // Fahrenheit
             temperature = temperature * 1.8 + 32;
-        }  
-    }
-    ResetPulse();
-    return temperature * 100;
+    }  
+        return temperature * 100;
 }
 
 void driveOW(unsigned char bit) {
@@ -185,4 +191,8 @@ int ifSensorPresent(void) {
     
     void setUnit(char value) {
         unit = value;
+    }
+    
+    int getTemperatureAverage() {
+        return convertTemperature(averageTemperature);
     }
