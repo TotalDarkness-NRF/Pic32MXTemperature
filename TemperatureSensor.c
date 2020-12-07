@@ -12,9 +12,13 @@ int getTemperature() {
      * To get temperature we use the formula
      * Temperature = (LSB truncated 0.5 degrees Celsius) - 0.25 + (CountPerC - CountRemain)/CountPerC
      */
-    temperature =  (scratchPad[0] >> 1)  - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
+    // TODO I fixed issue where negative would read as the 2 conjugate, but now there must be a better way
     
-    if (scratchPad[1] >> 7)  // Check MSB for sign bit
+     if (scratchPad[1] >> 7)  // Check MSB for sign bit, means the number we see is negate, perform a 2 conjugate
+         scratchPad[0] = -scratchPad[0];
+    
+    temperature =  (scratchPad[0] >> 1)  - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
+     if (scratchPad[1] >> 7)  // Check MSB for sign bit
          temperature = -temperature;
     
     if (averageTemperature == -999) averageTemperature = temperature;
