@@ -89,7 +89,7 @@ int getTemperatureAverage(void);
  */
 void initLCD(void);
 void LCDdisplay(char line1[], char line2[]);
-void displayStringStart(char start, char *string);
+void displayStringStart(int start, char *string);
 void displayString(char *string);
 void write(char data);
 void setPortB(char data);
@@ -98,7 +98,7 @@ void command(char data);
 void clearDisplay(void);
 void home(void);
 void nextLine(void);
-void setCursorPosition(char position);
+void setCursorPosition(int position);
 void setEntryMode(int cursorDirection, int blink);
 void setDisplay(int display, int cursor, int blink);
 void setShifting(int cursor, int display);
