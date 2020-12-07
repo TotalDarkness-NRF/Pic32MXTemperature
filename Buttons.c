@@ -58,6 +58,14 @@ void ChangeTemperatureUnit() {
     }
 }
 
-void ShowTime() {
-    
+void ShowUpimeAndAverage() {
+    if (BUTTON1) {
+        clearDisplay();
+        sprintf(text, "Average %3.2f%c", (float)getTemperatureAverage() / 100, getUnit());
+        displayString(text);
+        sprintf(text, "Uptime: time"); // TODO add time
+        displayStringStart(17, text);
+        Delay(2000);  // TODO use a timer not delay!
+        clearDisplay();
+    }
 }
