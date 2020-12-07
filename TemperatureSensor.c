@@ -12,19 +12,21 @@ int getTemperature() {
      * To get temperature we use the formula
      * Temperature = (LSB truncated 0.5 degrees Celsius) - 0.25 + (CountPerC - CountRemain)/CountPerC
      */
-    // TODO I fixed issue where negative would read as the 2 conjugate, but now there must be a better way
+    // TODO I fixed issue where negative would read as the 2's compliment, but now there must be a better way
     
+    /*
      if (scratchPad[1] >> 7)  // Check MSB for sign bit, means the number we see is negate, perform a 2 conjugate
          scratchPad[0] = -scratchPad[0];
+     */
     
-    temperature =  (scratchPad[0] >> 1)  - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
-     if (scratchPad[1] >> 7)  // Check MSB for sign bit
-         temperature = -temperature;
+    uint8_t tempRead = !isSigned() ? (scratchPad[0] >> 1) : (-scratchPad[0] >> 1);
+    
+    temperature = tempRead - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
+    
+     if (isSigned()) temperature = -temperature;
     
     if (averageTemperature == -999) averageTemperature = temperature;
     else  averageTemperature = (averageTemperature + temperature) / 2.0;
-    
-    ResetPulse();
     return  convertTemperature(temperature);
 }
 
@@ -35,6 +37,11 @@ int convertTemperature(float temperature) {
             temperature = temperature * 1.8 + 32;
     }  
         return temperature * 100;
+}
+
+int isSigned() {
+    // Check MSB for sign bit
+    return scratchPad[1] >> 7;
 }
 
 void driveOW(unsigned char bit) {
@@ -147,6 +154,7 @@ int ifSensorPresent(void) {
  */
     void getScratchpad(void) {
     int i;
+    ResetPulse();
     WriteByte(SKIP_ROM);
     WriteByte(CONVERT_T);
     Delay(getCoversionDelay());
