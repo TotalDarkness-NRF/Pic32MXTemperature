@@ -67,6 +67,7 @@
  *  Prototypes for the Temperature Sensor functions 
  */
 int getTemperature(void);
+int convertTemperature(float temperature);
 void DriveOW(unsigned char Bit);
 int ResetPulse(void);
 void getScratchpad(void);
@@ -81,20 +82,23 @@ int getCoversionDelay(void);
 int ifSensorPresent(void);
 void setPrecision(int type);
 int getPrecision(void);
+int getTemperatureAverage(void);
 
 /* 
  *  Prototypes for the LCD functions 
  */
 void initLCD(void);
 void LCDdisplay(char line1[], char line2[]);
+void displayStringStart(char start, char *string);
 void displayString(char *string);
 void write(char data);
 void setPortB(char data);
 void Nybble(void);
 void command(char data);
-void nextLine(void);
 void clearDisplay(void);
 void home(void);
+void nextLine(void);
+void setCursorPosition(char position);
 void setEntryMode(int cursorDirection, int blink);
 void setDisplay(int display, int cursor, int blink);
 void setShifting(int cursor, int display);
@@ -105,7 +109,7 @@ void setFunction(int DL, int N, int F);
 void Color(void);
 void ChangePrecision(void);
 void ChangeTemperatureUnit(void);
-void ShowTime(void);
+void ShowUpimeAndAverage();
 /*
  *  Prototypes for the delay functions
  */
