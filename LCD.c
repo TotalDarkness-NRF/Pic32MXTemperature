@@ -4,7 +4,7 @@ void displayString(char *string) {
     displayStringStart(0, string);
 }
 
-void displayStringStart(char start, char *string) {
+void displayStringStart(int start, char *string) {
     if (start > 32)  return;
     home();
     setCursorPosition(start);
@@ -61,40 +61,30 @@ void nextLine() {
 	command(0xC0);
 }
 
-void setCursorPosition(char position) {
-    if (position >= 0 && position <= 16)
+void setCursorPosition(int position) {
+    if (position > 0 && position <= 16)
         command(0x80 + position);
    else if (position > 16 && position <= 32)
        command(0xC0 + (position - 17));
 }
 
 void setEntryMode(int cursorDirection, int blink) {
-    cursorDirection = cursorDirection ? 2 : 0;
-    blink = blink ? 1 : 0;
-    command(0x04 + cursorDirection + blink);
+    command(0x04 + (cursorDirection&2) + (blink&1));
     Delay(1);
 }
 
 void setDisplay(int display, int cursor, int blink) {
-    display = display ? 4 : 0;
-    cursor = cursor ? 2 : 0;
-    blink = blink ? 1 : 0;
-    command(0x08 + display + cursor + blink);
+    command(0x08 + (display&4) + (cursor&2) + (blink&1));
     Delay(1);
 }
 
 void setShifting(int cursor, int display) {
-    cursor = cursor ? 8 : 0;
-    display = display ? 4 : 0;
-    command(0x10 + cursor + display);
+    command(0x10 + (cursor&8) + (display&4));
     Delay(1);
 }
 
 void setFunction(int DL, int N, int F) {
-     DL = DL ? 16 : 0;
-     N = N ? 8 : 0;
-     F = F ? 4 : 0;
-     command(0x20 + DL + N + F);
+     command(0x20 + (DL&16) + (N&8) + (F&4));
      Delay(1);
 }
 /*
