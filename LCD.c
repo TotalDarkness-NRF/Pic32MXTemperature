@@ -1,26 +1,29 @@
 #include "Thermometer.h"
 
 void displayString(char *string) {
-  int i;
-  home();
-  for(i=0;string[i]!='\0';i++) {
-      if (!(i %16) && i)  // check if line can fit on a line and is not 0
-          nextLine();
-      if (string[i] == 'C' && string[i + 1] == '\0') {
-          write(0xDF); // put degree symbol
-      }
-      write(string[i]);
-  }
+    displayStringStart(0, string);
+}
+
+void displayStringStart(char start, char *string) {
+    if (start > 32)  return;
+    home();
+    setCursorPosition(start);
+    int i;
+    for(i= 0; string[i] != '\0'; i++) {
+         if (!(i %16) && i && start<= 16) nextLine(); // check if line can fit on a line and is not 0
+            if (string[i] == 'C' && string[i + 1] == '\0') {
+                write(0xDF); // put degree symbol / /TODO I may not need this now!
+                if (!((i + 1)%16) && start<= 16) nextLine(); // check if line can fit on a line and is not 0  
+            }
+         write(string[i]);
+    }
 }
 
 void setPortB(char i) {
-    DB4 = i & 0x01;
-    i >>= 1;
-    DB5 = i & 0x01;
-    i >>= 1;
-    DB6 = i & 0x01;
-    i >>= 1;
-    DB7 = i & 0x01;
+    DB4 = i & 1;
+    DB5 = i >>1 & 1;
+    DB6 = i >>2 & 1;
+    DB7 = i >>3 & 1;
 }
 
 void write(char data) {
@@ -44,10 +47,6 @@ void command(char data) {
     Nybble();
 }
 
-void nextLine() {
-	command(0xC0);
-}
-
 void clearDisplay() {
     command(0x01);
     Delay(10);
@@ -56,6 +55,17 @@ void clearDisplay() {
 void home() {
     command(0x02);
     Delay(5);
+}
+
+void nextLine() {
+	command(0xC0);
+}
+
+void setCursorPosition(char position) {
+    if (position >= 0 && position <= 16)
+        command(0x80 + position);
+   else if (position > 16 && position <= 32)
+       command(0xC0 + (position - 17));
 }
 
 void setEntryMode(int cursorDirection, int blink) {
