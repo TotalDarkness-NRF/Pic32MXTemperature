@@ -10,10 +10,10 @@ int getTemperature() {
     getScratchpad();
     /*
      * To get temperature we use the formula
-     * Temperature = (LSB truncating the 0.5°C bit (bit 0)) - 0.25 + (CountPerC - CountRemain)/CountPerC
-     */
-    uint8_t tempRead = (!isSigned() ? scratchPad[0]:-scratchPad[0]) >> 1;
-    temperature = tempRead - 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
+     * Temperature = (Truncating the readTemp by 0.5°C bit (bit 0)) - 0.25 + (CountPerC - CountRemain)/CountPerC
+     */    
+    uint8_t readTemp = (isSigned() ? -scratchPad[0]:scratchPad[0]);
+    temperature = (readTemp >> 1)- 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
     
      if (isSigned()) temperature = -temperature;
     // TODO is there a point to getting average temp? Maybe just change button to switch view modes
@@ -91,7 +91,7 @@ void WriteBitZero(void) {
  * Read from one wire
  */
 unsigned char ReadByte() {
-    unsigned char i, result = 0;   // TODO can this be unsigned ?
+    unsigned char i, result = 0;
     for (i = 0; i < 8; i++) {
         result >>= 1; // shift the result to get it ready for the next bit to receive
         if (ReadBit())
