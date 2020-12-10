@@ -51,14 +51,16 @@ void ChangeTemperatureUnit() {
     }
 }
 
-void ShowUpimeAndAverage() {
+int ChangeViewMode(int viewMode) {
     if (BUTTON1) {
+        viewMode = viewMode == 1 ? 0:1;
         clearDisplay();
-        sprintf(text, "Average %3.2f%c", (float)getTemperatureAverage() / 100, getUnit());
+        sprintf(text, "Changing");
         displayString(text);
-        sprintf(text, "Uptime: time"); // TODO add time
+        sprintf(text, "View Mode");
         displayStringStart(17, text);
-        Delay(2000);  // TODO use a timer not delay!
+        Delay(1000);
         clearDisplay();
     }
+    return viewMode;
 }
