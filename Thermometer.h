@@ -24,7 +24,7 @@
 #define GREEN   _LATB8
 #define BLUE    _LATB7
 /*
- * Below defines pins for sensor
+ * Below defines pins for temperature sensor
  */
 #define PIN_DIRECTION   _TRISA0
 #define WRITE_PIN  		_LATA0
@@ -108,7 +108,7 @@ void setFunction(int DL, int N, int F);
 void Color(void);
 void ChangePrecision(void);
 void ChangeTemperatureUnit(void);
-void ShowUpimeAndAverage();
+int ChangeViewMode(int viewMode);
 /*
  *  Prototypes for the delay functions
  */
