@@ -53,12 +53,12 @@ void ChangeTemperatureUnit() {
 
 int ChangeViewMode(int viewMode) {
     if (BUTTON1) {
-        viewMode = viewMode == 1 ? 0:1;
+        viewMode = viewMode ? 0:1;
         clearDisplay();
         sprintf(text, "Changing");
-        displayString(text);
+        displayStringStart(4, text);
         sprintf(text, "View Mode");
-        displayStringStart(17, text);
+        displayStringStart(20, text);
         Delay(1000);
         clearDisplay();
     }
