@@ -52,7 +52,7 @@ void main (void) {
                 ms -= minutes * 60000;
                 int seconds = ms / 1000;
                 ms -= seconds * 1000;
-                sprintf(LCDString, "%dh:%dm:%ds:%dms", hours, minutes, seconds, ms);
+                sprintf(LCDString, "%dh:%dm:%ds:%d", hours, minutes, seconds, ms);
                 displayStringStart(0, LCDString);
                 if (precision == 9) {
                     sprintf(LCDString, "%3.2f%c",temperature, getUnit());
