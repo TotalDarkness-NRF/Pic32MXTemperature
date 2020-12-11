@@ -1,21 +1,19 @@
 #include "Thermometer.h"
 
- // TODO maybe have interupts instead, delay do to getting temperature
-
 char text[32];
 
 void Color() {
         if (BUTTON4) {
             RED = !RED;
-            Delay(200);
+            Delay(500);
         }
         if (BUTTON5) {
             GREEN = !GREEN;
-            Delay(200);
+            Delay(500);
         }
         if (BUTTON6) {
             BLUE = !BLUE;
-            Delay(200);
+            Delay(500);
         }
 }
 
