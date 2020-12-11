@@ -43,9 +43,27 @@ void main (void) {
                 } else {
                     sprintf(LCDString, "Temperature:    %3.9f%c",temperature, getUnit());
                 }
+                displayString(LCDString);
             } else {
-                sprintf(LCDString, "Uptime: %.4fs%3.9f%c", time / 1000.0, temperature, getUnit());
-                // TODO format this better
+                int ms = time;
+                int hours = ms / 3600000;
+                ms -=  hours *3600000;
+                int minutes = ms/ 60000;
+                ms -= minutes * 60000;
+                int seconds = ms / 1000;
+                ms -= seconds * 1000;
+                sprintf(LCDString, "%dh:%dm:%ds:%dms", hours, minutes, seconds, ms);
+                displayStringStart(0, LCDString);
+                if (precision == 9) {
+                    sprintf(LCDString, "%3.2f%c",temperature, getUnit());
+                } else if (precision == 10) {
+                    sprintf(LCDString, "%3.3f%c",temperature, getUnit());
+                } else if (precision == 11) {
+                    sprintf(LCDString, "%3.6f%c",temperature, getUnit());
+                } else {
+                    sprintf(LCDString, "%3.9f%c",temperature, getUnit());
+                }
+                displayStringStart(17, LCDString);
             }
             
             if (!tempPrescence) {
@@ -55,9 +73,9 @@ void main (void) {
             }
         } else {
             sprintf(LCDString, "SENSOR NOT FOUND~~~~~ERROR!~~~~~");
+            displayString(LCDString);
             tempPrescence = 0;
         }
-        displayString(LCDString);
     }
 }
 
