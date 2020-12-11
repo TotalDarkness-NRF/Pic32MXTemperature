@@ -82,7 +82,6 @@ int getCoversionDelay(void);
 int ifSensorPresent(void);
 void setPrecision(int type);
 int getPrecision(void);
-int getTemperatureAverage(void);
 /* 
  *  Prototypes for the LCD functions 
  */
