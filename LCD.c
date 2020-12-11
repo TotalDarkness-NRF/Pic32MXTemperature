@@ -12,7 +12,7 @@ void displayStringStart(int start, char *string) {
     for(i= 0; string[i] != '\0'; i++) {
          if (!(i %16) && i && start<= 16) nextLine(); // check if line can fit on a line and is not 0
             if (string[i] == 'C' && string[i + 1] == '\0') {
-                write(0xDF); // put degree symbol / /TODO I may not need this now!
+                write(0xDF); // put degree symbol
                 if (!((i + 1)%16) && start<= 16) nextLine(); // check if line can fit on a line and is not 0  
             }
          write(string[i]);
