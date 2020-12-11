@@ -1,7 +1,6 @@
 #include "Thermometer.h"
 
 int precision = 9;
-float averageTemperature = -999;
 char unit = 'C';
 uint8_t scratchPad[9];
 
@@ -16,10 +15,6 @@ int getTemperature() {
     temperature = (readTemp >> 1)- 0.25 + ((scratchPad[7] - scratchPad[6])/(float)scratchPad[7]);
     
      if (isSigned()) temperature = -temperature;
-    // TODO is there a point to getting average temp? Maybe just change button to switch view modes
-    if (averageTemperature == -999) averageTemperature = temperature;
-    else  averageTemperature = (averageTemperature + temperature) / 2.0;
-    
     return  convertTemperature(temperature);
 }
 
@@ -193,8 +188,4 @@ int ifSensorPresent(void) {
     
     void setUnit(char value) {
         unit = value;
-    }
-    
-    int getTemperatureAverage() {
-        return convertTemperature(averageTemperature);
     }
